@@ -1,10 +1,11 @@
-package sra
+package sra_test
 
 import (
 	"crypto/rand"
 	"math/big"
 	"testing"
 
+	"github.com/cretz/go-mental-poker/sra"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,15 +14,15 @@ func TestSRACommutative(t *testing.T) {
 	prime, err := rand.Prime(rand.Reader, 256)
 	require.NoError(t, err)
 	// Gen key pairs for alice, bob, and ted
-	alice, err := GenerateKeyPair(rand.Reader, prime, 32)
+	alice, err := sra.GenerateKeyPair(rand.Reader, prime, 32)
 	require.NoError(t, err)
-	bob, err := GenerateKeyPair(rand.Reader, prime, 32)
+	bob, err := sra.GenerateKeyPair(rand.Reader, prime, 32)
 	require.NoError(t, err)
-	ted, err := GenerateKeyPair(rand.Reader, prime, 32)
+	ted, err := sra.GenerateKeyPair(rand.Reader, prime, 32)
 	require.NoError(t, err)
 
 	// Make sure it can be encrypted by all the people in any order, and decrypted
-	peoplePerms := [][]*KeyPair{
+	peoplePerms := [][]*sra.KeyPair{
 		{alice, bob, ted},
 		{alice, ted, bob},
 		{bob, alice, ted},
@@ -40,7 +41,7 @@ func TestSRACommutative(t *testing.T) {
 	}
 }
 
-func encryptMulti(t *testing.T, v *big.Int, people []*KeyPair) *big.Int {
+func encryptMulti(t *testing.T, v *big.Int, people []*sra.KeyPair) *big.Int {
 	orig := v
 	for _, person := range people {
 		v = person.EncryptInt(v)
@@ -52,7 +53,7 @@ func encryptMulti(t *testing.T, v *big.Int, people []*KeyPair) *big.Int {
 	return v
 }
 
-func decryptMulti(t *testing.T, v *big.Int, people []*KeyPair) *big.Int {
+func decryptMulti(t *testing.T, v *big.Int, people []*sra.KeyPair) *big.Int {
 	orig := v
 	for _, person := range people {
 		v = person.DecryptInt(v)
@@ -66,7 +67,7 @@ func decryptMulti(t *testing.T, v *big.Int, people []*KeyPair) *big.Int {
 
 func newSuperSecretInt(t *testing.T, maxBits int) *big.Int {
 	bigTwo := big.NewInt(2)
-	max := new(big.Int).Sub(new(big.Int).Exp(bigTwo, big.NewInt(int64(maxBits)), nil), bigOne)
+	max := new(big.Int).Sub(new(big.Int).Exp(bigTwo, big.NewInt(int64(maxBits)), nil), big.NewInt(1))
 	for {
 		superSecretInt, err := rand.Int(rand.Reader, max)
 		require.NoError(t, err)
