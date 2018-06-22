@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestSimpleDraw is a demonstration of using a deck and players
 func TestSimpleDraw(t *testing.T) {
 	// Get/print all cards in deck in order
 	allCardsInOrder := make([]Card, 52)
@@ -62,7 +63,7 @@ type Card struct {
 	Card int
 }
 
-// v is 0-53, mod 4 is suit, div 4 is 0-aligned card (so we add 2 to get 2 through 14)
+// v is 0-53, suit is mod 4, card is div 4 + 2 (so we get 2 through 14)
 func CardFromInt(v int) Card { return Card{Suit: v % 4, Card: (v / 4) + 2} }
 
 func CardFromBigInt(v *big.Int) (card Card, err error) {
